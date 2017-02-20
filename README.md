@@ -10,11 +10,12 @@ Usage
 you want to generate.
 
 2. Run the script to generate the data.
-
-    ./generate_data.py data.json
+```
+./generate_data.py data.json
+```
 
 3. Run the bulk importer.
-
-    platform import bulk data.json
-
+```
+platform import bulk data.json
+```
 
