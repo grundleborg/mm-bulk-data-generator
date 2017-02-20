@@ -1,5 +1,5 @@
-bulk-import-generator
-=====================
+mm-bulk-data-generator
+======================
 
 This python script generates bulk import data for testing.
 
