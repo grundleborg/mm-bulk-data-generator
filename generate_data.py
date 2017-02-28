@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 import base64
+import datetime
 import json
 import sys
 import uuid
 
-from random import randint
+from random import choice, randint
 
 TEAM_COUNT = 1
-CHANNELS_PER_TEAM = 200
-USER_COUNT = 5000
+CHANNELS_PER_TEAM = 1
+USER_COUNT = 5
 TEAMS_PER_USER = 1
-CHANNELS_PER_USER_PER_TEAM = 100
+CHANNELS_PER_USER_PER_TEAM = 1
+POSTS = 10000
 
 RESERVED_TEAM_NAMES = [
     "signup",
@@ -24,6 +26,16 @@ RESERVED_TEAM_NAMES = [
 
 def generate_identifier():
     return base64.b32encode(uuid.uuid4().bytes).decode('ascii').strip('=').lower()
+
+def get_millis():
+    return int((datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
+
+word_file = "/usr/share/dict/words"
+WORDS = open(word_file).read().splitlines()
+
+def random_message():
+    return " ".join([choice(WORDS) for i in range(0, 10)])
+
 
 output_file = sys.argv[1]
 f = open(output_file, 'w')
@@ -50,6 +62,7 @@ for i in range(0,TEAM_COUNT):
     print("Generating Team: {}".format(team['name']))
     team['display_name'] = generate_identifier()
     team['type'] = 'O'
+    team['allow_open_invite'] = True
     teams.append(team)
 
 # Write teams.
@@ -130,6 +143,30 @@ for user in users:
     data = {
             'type': 'user',
             'user': user,
+    }
+    f.write(json.dumps(data)+"\n")
+
+posts = []
+for i in range(0, POSTS):
+    post = {}
+
+    post['team'] = teams[randint(0, TEAM_COUNT-1)]["name"]
+    post['channel'] = channels_by_team[post['team']][randint(0, len(channels_by_team[post['team']])-1)]["name"]
+    post['user'] = users[randint(0, USER_COUNT-1)]["username"]
+
+    START_WINDOW = get_millis() - 10000 * 3 * POSTS
+    END_WINDOW = get_millis()
+
+    post['create_at'] = randint(START_WINDOW, END_WINDOW)
+    post['message'] = random_message()
+
+    posts.append(post)
+
+# Write posts.
+for post in posts:
+    data = {
+            'type': 'post',
+            'post': post,
     }
     f.write(json.dumps(data)+"\n")
 
