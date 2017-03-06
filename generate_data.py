@@ -104,7 +104,7 @@ users = []
 for i in range(0, USER_COUNT):
     user = {}
 
-    user['username'] = generate_identifier()
+    user['username'] = "n" + generate_identifier()
     user['email'] = generate_identifier() + "@example.com"
     user['teams'] = []
     print("Generating User: {}".format(user['username']))
