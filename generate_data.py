@@ -8,11 +8,13 @@ import uuid
 from random import choice, randint
 
 TEAM_COUNT = 1
-CHANNELS_PER_TEAM = 1
-USER_COUNT = 5
+CHANNELS_PER_TEAM = 20
+USER_COUNT = 20
 TEAMS_PER_USER = 1
-CHANNELS_PER_USER_PER_TEAM = 1
-POSTS = 10000
+CHANNELS_PER_USER_PER_TEAM = 10
+POSTS = 1000
+DIRECT_CHANNELS_PER_USER = 25
+DIRECT_POSTS = 1000
 
 RESERVED_TEAM_NAMES = [
     "signup",
@@ -106,6 +108,7 @@ for i in range(0, USER_COUNT):
 
     user['username'] = "n" + generate_identifier()
     user['email'] = generate_identifier() + "@example.com"
+    user['password'] = "12345"
     user['teams'] = []
     print("Generating User: {}".format(user['username']))
 
@@ -167,6 +170,56 @@ for post in posts:
     data = {
             'type': 'post',
             'post': post,
+    }
+    f.write(json.dumps(data)+"\n")
+
+direct_channels = []
+for u in users:
+    for i in range(0, DIRECT_CHANNELS_PER_USER):
+        dc = {}
+        dc["members"] = [u["username"],]
+        for i in range(0, randint(1, 7)):
+            other = users[randint(0, len(users)-1)]
+            skip = False
+            for o in dc["members"]:
+                if o == other["username"]:
+                    skip = True
+            if not skip:
+                dc["members"].append(other["username"])
+        
+        if len(dc["members"]) >= 2:
+            direct_channels.append(dc)
+
+# Write direct channels.
+for dc in direct_channels:
+    data = {
+            'type': 'direct_channel',
+            'direct_channel': dc
+    }
+    f.write(json.dumps(data)+"\n")
+
+direct_posts = []
+for i in range(0, POSTS):
+    post = {}
+
+    channel = direct_channels[randint(0, len(direct_channels)-1)]
+    
+    post['channel_members'] = channel["members"]
+    post['user'] = channel["members"][randint(0, len(channel["members"])-1)]
+
+    START_WINDOW = get_millis() - 10000 * 3 * POSTS
+    END_WINDOW = get_millis()
+
+    post['create_at'] = randint(START_WINDOW, END_WINDOW)
+    post['message'] = random_message()
+
+    direct_posts.append(post)
+
+# Write direct channels.
+for dp in direct_posts:
+    data = {
+            'type': 'direct_post',
+            'direct_post': dp
     }
     f.write(json.dumps(data)+"\n")
 
