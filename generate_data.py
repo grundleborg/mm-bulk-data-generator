@@ -149,7 +149,6 @@ for user in users:
     }
     f.write(json.dumps(data)+"\n")
 
-posts = []
 for i in range(0, POSTS):
     post = {}
 
@@ -163,10 +162,6 @@ for i in range(0, POSTS):
     post['create_at'] = randint(START_WINDOW, END_WINDOW)
     post['message'] = random_message()
 
-    posts.append(post)
-
-# Write posts.
-for post in posts:
     data = {
             'type': 'post',
             'post': post,
@@ -198,7 +193,6 @@ for dc in direct_channels:
     }
     f.write(json.dumps(data)+"\n")
 
-direct_posts = []
 for i in range(0, POSTS):
     post = {}
 
@@ -213,13 +207,9 @@ for i in range(0, POSTS):
     post['create_at'] = randint(START_WINDOW, END_WINDOW)
     post['message'] = random_message()
 
-    direct_posts.append(post)
-
-# Write direct channels.
-for dp in direct_posts:
     data = {
             'type': 'direct_post',
-            'direct_post': dp
+            'direct_post': post
     }
     f.write(json.dumps(data)+"\n")
 
