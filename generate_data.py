@@ -193,7 +193,7 @@ for dc in direct_channels:
     }
     f.write(json.dumps(data)+"\n")
 
-for i in range(0, POSTS):
+for i in range(0, DIRECT_POSTS):
     post = {}
 
     channel = direct_channels[randint(0, len(direct_channels)-1)]
